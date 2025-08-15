@@ -13,7 +13,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); /* Gradient background for a lively feel */
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); /* Lighter, cleaner background */
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
@@ -23,132 +23,207 @@
         /* Main game container styling */
         #game-container {
             background-color: #ffffff;
-            border-radius: 25px; /* Rounded corners for kid-friendly design */
-            padding: 40px; /* Increased padding for more space */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 25px;
+            padding: 50px; /* Increased padding significantly */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
-            max-width: 600px; /* Max width for better readability on large screens */
-            width: 100%; /* Fluid width for responsiveness */
+            max-width: 700px;
+            width: 100%;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 25px; /* Increased gap for better vertical spacing between sections */
+            gap: 35px; /* Increased gap for better vertical spacing between sections */
         }
 
-        /* Header for score and timer */
-        #header {
+        /* Top status bar styling (progress and score) */
+        #top-status-bar {
             display: flex;
             justify-content: space-between;
-            font-size: 1.5em;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 30px; /* Increased margin below status bar */
+        }
+
+        /* Progress bar container */
+        #progress-bar-container {
+            flex-grow: 1; /* Allows progress bar to take available space */
+            height: 15px; /* Slightly thinner progress bar */
+            background-color: #e0e0e0;
+            border-radius: 8px; /* Slightly smaller border-radius */
+            margin: 0 20px; /* Space from score */
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        /* Progress bar fill */
+        #progress-bar-fill {
+            height: 100%;
+            width: 100%; /* Starts full */
+            background-color: #7ED957; /* A softer green */
+            border-radius: 8px;
+            transition: width 0.5s linear;
+        }
+
+        /* Score display */
+        #score-display {
+            font-size: 1.4em;
             font-weight: bold;
             color: #555;
-            margin-bottom: 25px; /* Slightly increased margin */
+            min-width: 60px; /* Ensure space for score */
+            text-align: right;
+        }
+
+        /* Question area styling */
+        #question-area {
+            margin-bottom: 40px; /* More space below question area */
+        }
+
+        /* Audio prompt text */
+        #audio-prompt {
+            font-size: 1.8em; /* Slightly larger prompt */
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 30px; /* More space below prompt */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px; /* Slightly increased gap for icon and text */
         }
 
         /* Styling for the displayed letter */
         #letter-display {
-            font-size: 8em; /* Super large for kids to easily see */
+            font-size: 9em; /* Even larger letter for focus */
             font-weight: bold;
-            color: #3498db; /* Bright blue color */
-            background-color: #ecf0f1;
-            border-radius: 20px;
-            padding: 45px 25px; /* Increased padding for internal space */
-            margin-bottom: 35px; /* Increased margin for more separation */
-            transition: background-color 0.3s ease; /* Smooth transition for feedback */
+            color: #3498db;
+            background-color: #f8f8f8; /* Lighter background for the letter */
+            border-radius: 25px; /* More rounded */
+            padding: 50px 30px; /* More internal padding */
+            transition: background-color 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); /* Subtle shadow */
         }
 
         /* Container for option buttons */
         #options-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid for buttons */
-            gap: 20px; /* Increased gap between option buttons */
-            margin-bottom: 35px; /* Increased margin for separation */
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Adjusted min-width for buttons */
+            gap: 25px; /* Increased gap between option buttons */
+            margin-bottom: 40px; /* Increased margin for separation */
         }
 
         /* Common styles for all buttons */
         .option-button,
         #start-button,
         #play-sound-button,
+        #skip-button,
         #play-again-button {
-            font-size: 2.2em;
+            font-size: 2.5em; /* Larger button text */
             font-weight: bold;
-            padding: 20px 0;
+            padding: 22px 0; /* Increased padding for buttons */
             border: none;
-            border-radius: 15px;
+            border-radius: 20px; /* More rounded buttons */
             cursor: pointer;
-            transition: all 0.2s ease; /* Smooth hover and active effects */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* Styling for the choice buttons */
         .option-button {
-            background-color: #2ecc71; /* Green color */
+            background-color: #6c7bff; /* A nice shade of blue/purple */
             color: white;
         }
 
         /* Hover and active states for choice buttons */
         .option-button:hover:not(:disabled) {
-            background-color: #27ae60;
-            transform: translateY(-3px); /* Slight lift effect */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background-color: #5b69ec;
+            transform: translateY(-4px); /* Slight lift effect */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
 
         .option-button:active:not(:disabled) {
             transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         /* Disabled state for buttons */
         .option-button:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        /* Container for action buttons (Play Sound, Skip) */
+        #action-buttons {
+            display: flex;
+            gap: 25px; /* Increased gap between action buttons */
+            justify-content: center;
+            width: 100%;
+            margin-top: 20px; /* Space above action buttons */
+            margin-bottom: 35px; /* Space below action buttons */
         }
 
         /* Styling for the play sound button */
         #play-sound-button {
-            background-color: #f39c12; /* Orange color */
-            color: white;
-            font-size: 1.8em;
-            width: 100%;
-            margin-top: 15px; /* Increased margin */
+            background-color: #ffc107; /* Brighter orange/yellow */
+            color: #333; /* Darker text for contrast */
+            font-size: 2em;
+            flex: 1;
+            padding: 18px 0; /* Adjusted padding for these buttons */
+        }
+
+        /* Styling for the skip button */
+        #skip-button {
+            background-color: #bdbdbd; /* Neutral grey for skip */
+            color: #333; /* Darker text for contrast */
+            font-size: 2em;
+            flex: 1;
+            padding: 18px 0; /* Adjusted padding for these buttons */
         }
 
         /* Hover and active states for play sound button */
         #play-sound-button:hover:not(:disabled) {
-            background-color: #e67e22;
+            background-color: #ffb300;
             transform: translateY(-3px);
         }
         #play-sound-button:active:not(:disabled) {
             transform: translateY(0);
         }
 
+        /* Hover and active states for skip button */
+        #skip-button:hover:not(:disabled) {
+            background-color: #a0a0a0;
+            transform: translateY(-3px);
+        }
+        #skip-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
         /* Styling for start and play again buttons */
         #start-button, #play-again-button {
-            background-color: #9b59b6; /* Purple color */
+            background-color: #4CAF50; /* A friendly green */
             color: white;
-            font-size: 2.5em;
-            padding: 25px 50px;
-            margin-top: 25px; /* Increased margin */
+            font-size: 2.8em; /* Larger start button */
+            padding: 30px 60px; /* More padding */
+            margin-top: 30px; /* Increased margin */
+            border-radius: 25px; /* More rounded */
         }
         /* Hover and active states for start/play again buttons */
         #start-button:hover:not(:disabled), #play-again-button:hover:not(:disabled) {
-            background-color: #8e44ad;
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+            background-color: #45a049;
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
         #start-button:active:not(:disabled), #play-again-button:active:not(:disabled) {
             transform: translateY(0);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* Styling for feedback message (correct/incorrect) */
         #feedback-message {
-            font-size: 1.8em;
+            font-size: 2em; /* Larger feedback text */
             font-weight: bold;
-            margin-top: 25px; /* Increased margin */
-            padding: 15px;
-            border-radius: 10px;
-            visibility: hidden; /* Hidden by default */
+            margin-top: 30px; /* Increased margin */
+            padding: 20px; /* More padding */
+            border-radius: 15px; /* More rounded */
+            visibility: hidden;
             opacity: 0;
             transition: opacity 0.3s ease, background-color 0.3s ease;
             color: white;
@@ -156,28 +231,28 @@
 
         /* Styling for correct feedback */
         #feedback-message.correct {
-            background-color: #27ae60; /* Darker Green */
+            background-color: #28a745; /* Bootstrap-like success green */
             visibility: visible;
             opacity: 1;
         }
 
         /* Styling for incorrect feedback */
         #feedback-message.incorrect {
-            background-color: #c0392b; /* Darker Red */
+            background-color: #dc3545; /* Bootstrap-like danger red */
             visibility: visible;
             opacity: 1;
         }
 
         /* Game Over Modal overlay */
         #game-over-modal {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
-            backdrop-filter: blur(5px); /* Blur effect for the background */
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -187,28 +262,28 @@
         /* Content inside the game over modal */
         #game-over-content {
             background-color: #ffffff;
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 25px;
+            padding: 50px; /* More padding */
             text-align: center;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            max-width: 550px; /* Slightly larger modal */
             width: 90%;
             box-sizing: border-box;
-            animation: bounceIn 0.6s ease-out; /* Bounce animation when it appears */
+            animation: bounceIn 0.6s ease-out;
         }
 
         /* Styling for game over title */
         #game-over-content h2 {
-            font-size: 3em;
-            color: #e74c3c; /* Red color for attention */
-            margin-bottom: 20px;
+            font-size: 3.5em; /* Larger title */
+            color: #e74c3c;
+            margin-bottom: 25px;
         }
 
         /* Styling for final score text */
         #game-over-content p {
-            font-size: 1.8em;
+            font-size: 2.2em; /* Larger score text */
             color: #555;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
         /* Keyframe animation for bounce effect */
@@ -220,64 +295,122 @@
 
         /* Responsive adjustments for smaller screens */
         @media (max-width: 768px) {
-            #letter-display {
-                font-size: 6em;
-                padding: 35px 20px;
-            }
-            .option-button {
-                font-size: 1.8em;
-                padding: 15px 0;
-            }
-            #play-sound-button {
-                font-size: 1.5em;
-            }
-            #header {
-                font-size: 1.2em;
-            }
-            #start-button, #play-again-button {
-                font-size: 2em;
-                padding: 20px 40px;
-            }
-            #game-over-content h2 {
-                font-size: 2.5em;
-            }
-            #game-over-content p {
-                font-size: 1.5em;
-            }
             #game-container {
-                padding: 30px; /* Adjust padding for smaller screens */
-                gap: 20px;
+                padding: 30px;
+                gap: 25px;
+            }
+            #top-status-bar {
+                margin-bottom: 20px;
+            }
+            #audio-prompt {
+                font-size: 1.6em;
+                margin-bottom: 25px;
+            }
+            #letter-display {
+                font-size: 7em;
+                padding: 40px 20px;
             }
             #options-container {
-                gap: 15px; /* Adjust options gap */
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            .option-button {
+                font-size: 2em;
+                padding: 18px 0;
+            }
+            #action-buttons {
+                gap: 20px;
+                margin-top: 15px;
+                margin-bottom: 30px;
+            }
+            #play-sound-button, #skip-button {
+                font-size: 1.7em;
+                padding: 15px 0;
+            }
+            #feedback-message {
+                font-size: 1.8em;
+                margin-top: 25px;
+                padding: 18px;
+            }
+            #start-button, #play-again-button {
+                font-size: 2.5em;
+                padding: 25px 50px;
+            }
+            #game-over-content {
+                padding: 40px;
+            }
+            #game-over-content h2 {
+                font-size: 3em;
+            }
+            #game-over-content p {
+                font-size: 2em;
             }
         }
 
         @media (max-width: 480px) {
-            #letter-display {
-                font-size: 4.5em;
-                padding: 25px 10px;
-            }
-            .option-button {
-                font-size: 1.5em;
-                padding: 12px 0;
-            }
             #game-container {
                 padding: 20px;
+                gap: 20px;
             }
-            #header {
+            #top-status-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+            #progress-bar-container {
+                width: 90%; /* Take more width when wrapped */
+                margin: 0; /* Remove horizontal margin when wrapped */
+            }
+            #score-display {
+                order: -1; /* Move score above progress bar on small screens if wrapped */
+                width: 100%;
+                text-align: center;
+            }
+            #audio-prompt {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+            #letter-display {
+                font-size: 5em;
+                padding: 35px 15px;
+            }
+            #options-container {
+                gap: 15px;
+                grid-template-columns: 1fr; /* Stack buttons vertically on very small screens */
+                margin-bottom: 25px;
+            }
+            .option-button {
+                font-size: 2em;
+                padding: 15px 0;
+            }
+            #action-buttons {
                 flex-direction: column;
-                gap: 10px;
-                font-size: 1em;
+                gap: 15px;
+                margin-top: 10px;
+                margin-bottom: 25px;
+            }
+            #play-sound-button, #skip-button {
+                font-size: 1.6em;
+                padding: 12px 0;
+            }
+            #feedback-message {
+                font-size: 1.6em;
+                margin-top: 20px;
+                padding: 15px;
+            }
+            #start-button, #play-again-button {
+                font-size: 2.2em;
+                padding: 20px 40px;
             }
             #game-over-content {
                 padding: 30px;
             }
             #game-over-content h2 {
-                font-size: 2em;
+                font-size: 2.5em;
             }
             #game-over-content p {
-                font-size: 1.2em;
+                font-size: 1.8em;
             }
         }
     </style>
@@ -289,21 +422,30 @@
 
         <!-- Game elements, hidden until the game starts -->
         <div id="game-elements" style="display: none;">
-            <div id="header">
-                <div id="score">分數: 0</div>
-                <div id="timer">時間: 60s</div>
+            <div id="top-status-bar">
+                <div id="score-display">分數: 0</div>
+                <div id="progress-bar-container">
+                    <div id="progress-bar-fill"></div>
+                </div>
             </div>
 
-            <!-- Area to display the current letter -->
-            <div id="letter-display">A</div>
+            <div id="question-area">
+                <!-- Explicit prompt for clarity and sound icon -->
+                <div id="audio-prompt">🔊 這是哪個字母？</div>
+                <!-- Area to display the current letter -->
+                <div id="letter-display">A</div>
+            </div>
 
             <!-- Container for multiple-choice option buttons -->
             <div id="options-container">
                 <!-- Option buttons will be dynamically inserted here by JavaScript -->
             </div>
 
-            <!-- Button to replay the sound of the current letter -->
-            <button id="play-sound-button">🔊 再聽一次</button>
+            <!-- Container for Play Sound and Skip buttons -->
+            <div id="action-buttons">
+                <button id="play-sound-button">🔊 再聽一次</button>
+                <button id="skip-button">跳過</button>
+            </div>
 
             <!-- Message area for correct/incorrect feedback -->
             <div id="feedback-message"></div>
@@ -324,7 +466,8 @@
         const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
         // Game variables
         let score = 0; // Current score
-        let timeLeft = 60; // Time left in seconds for the game
+        const INITIAL_TIME_LEFT = 60; // Total time for the game in seconds
+        let timeLeft = INITIAL_TIME_LEFT; // Time left in seconds for the game
         let currentLetter = ''; // The letter currently being asked
         let gameInterval; // Variable to hold the timer interval ID
 
@@ -356,11 +499,12 @@
         // Get references to HTML elements
         const startButton = document.getElementById('start-button');
         const gameElements = document.getElementById('game-elements');
-        const scoreDisplay = document.getElementById('score');
-        const timerDisplay = document.getElementById('timer');
+        const scoreDisplay = document.getElementById('score-display'); // Updated ID
+        const progressBarFill = document.getElementById('progress-bar-fill');
         const letterDisplay = document.getElementById('letter-display');
         const optionsContainer = document.getElementById('options-container');
         const playSoundButton = document.getElementById('play-sound-button');
+        const skipButton = document.getElementById('skip-button');
         const feedbackMessage = document.getElementById('feedback-message');
         const gameOverModal = document.getElementById('game-over-modal');
         const finalScoreDisplay = document.getElementById('final-score');
@@ -377,6 +521,10 @@
 
         // Function to play the sound of a given letter
         function playSound(letter) {
+            // Ensure any ongoing speech is stopped before playing new sound
+            if (synth.speaking) {
+                synth.cancel();
+            }
             utterance.text = letter; // Set the text to be spoken
             synth.speak(utterance); // Speak the text
         }
@@ -386,7 +534,7 @@
             // Clear previous feedback message and reset letter display background
             feedbackMessage.style.visibility = 'hidden';
             feedbackMessage.classList.remove('correct', 'incorrect');
-            letterDisplay.style.backgroundColor = '#ecf0f1'; // Reset background color
+            letterDisplay.style.backgroundColor = '#f8f8f8'; // Reset background color
 
             // Randomly select a new letter for the question
             currentLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
@@ -428,11 +576,13 @@
             Array.from(optionsContainer.children).forEach(button => {
                 button.disabled = true;
             });
+            playSoundButton.disabled = true; // Disable play sound during feedback
+            skipButton.disabled = true; // Disable skip during feedback
 
             if (selectedLetter === currentLetter) {
                 // If correct, increment score and provide positive feedback
                 score++;
-                scoreDisplay.textContent = `分數: ${score}`;
+                scoreDisplay.textContent = `分數: ${score}`; // Update score display
                 feedbackMessage.textContent = '答對了！';
                 feedbackMessage.classList.add('correct');
                 feedbackMessage.style.visibility = 'visible';
@@ -450,14 +600,27 @@
                 Array.from(optionsContainer.children).forEach(button => {
                     button.disabled = false; // Re-enable buttons
                 });
+                playSoundButton.disabled = false; // Re-enable play sound
+                skipButton.disabled = false; // Re-enable skip
                 nextQuestion();
             }, 1000); // 1 second delay for feedback
         }
 
-        // Function to update the game timer
+        // Function to update the game timer and progress bar
         function updateTimer() {
             timeLeft--; // Decrement time
-            timerDisplay.textContent = `時間: ${timeLeft}s`; // Update timer display
+            // Calculate progress percentage and update progress bar width
+            const progressPercentage = (timeLeft / INITIAL_TIME_LEFT) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+
+            // Change progress bar color based on remaining time (optional visual cue)
+            if (progressPercentage < 25) {
+                progressBarFill.style.backgroundColor = '#e74c3c'; // Red when low
+            } else if (progressPercentage < 50) {
+                progressBarFill.style.backgroundColor = '#f39c12'; // Orange when medium
+            } else {
+                progressBarFill.style.backgroundColor = '#7ED957'; // Green when high
+            }
 
             if (timeLeft <= 0) {
                 clearInterval(gameInterval); // Stop the timer
@@ -475,9 +638,11 @@
         // Function to initialize or reset the game state
         function initializeGame() {
             score = 0; // Reset score
-            timeLeft = 60; // Reset timer
-            scoreDisplay.textContent = `分數: ${score}`;
-            timerDisplay.textContent = `時間: ${timeLeft}s`;
+            timeLeft = INITIAL_TIME_LEFT; // Reset timer
+            scoreDisplay.textContent = `分數: ${score}`; // Update score display
+            progressBarFill.style.width = '100%'; // Reset progress bar
+            progressBarFill.style.backgroundColor = '#7ED957'; // Reset progress bar color
+
             startButton.style.display = 'block'; // Show start button
             gameElements.style.display = 'none'; // Hide game elements
             gameOverModal.style.display = 'none'; // Hide game over modal
@@ -497,6 +662,12 @@
             if (currentLetter) { // Only play sound if a letter is currently displayed
                 playSound(currentLetter);
             }
+        });
+
+        // Event listener for the "Skip" button
+        skipButton.addEventListener('click', () => {
+            nextQuestion(); // Move to the next question immediately
+            // Optionally, you might decrement score or time for skipping, but for a 5-year-old, just moving on is simpler.
         });
 
         // Event listener for the "Play Again" button in the game over modal
