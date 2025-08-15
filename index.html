@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>西文字母配對遊戲</title>
+    <title>西班牙語字母配對遊戲</title>
     <!-- 載入 Tailwind CSS 框架，用於快速構建響應式 UI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 載入 Inter 字體，提供清晰現代的文字顯示 -->
@@ -398,6 +398,7 @@
          * @param {string} letter - 要發音的字母。
          */
         async function fetchAndPlayAudio(letter) {
+            console.log("嘗試獲取字母音訊:", letter); // 偵錯日誌
             loadingIndicator.classList.remove('hidden'); // 顯示載入指示器
             playAudioBtn.disabled = true; // 禁用播放按鈕
             
@@ -432,11 +433,13 @@
                 // 實作指數退避策略處理 API 呼叫的潛在節流
                 while (retryCount < maxRetries) {
                     try {
+                        console.log(`嘗試獲取音訊 (重試 ${retryCount + 1}/${maxRetries})...`); // 偵錯日誌
                         response = await fetch(apiUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(payload)
                         });
+                        console.log("Fetch API 回應狀態:", response.status, response.statusText); // 偵錯日誌
                         if (response.ok) {
                             break; // 成功，退出循環
                         } else if (response.status === 429) { // 請求過多 (Rate Limit)
@@ -460,35 +463,43 @@
                 }
 
                 const result = await response.json();
+                console.log("API 回應 JSON (完整):", result); // 偵錯日誌
                 const part = result?.candidates?.[0]?.content?.parts?.[0];
                 const audioData = part?.inlineData?.data;
                 const mimeType = part?.inlineData?.mimeType;
 
                 if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                    console.log("成功接收音訊數據，MIME 類型:", mimeType); // 偵錯日誌
                     const sampleRateMatch = mimeType.match(/rate=(\d+)/);
-                    // 從 MIME 類型中提取取樣率，如果未找到則預設為 16kHz
-                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 16000;
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 16000; // 預設 16kHz
+                    console.log("取樣率:", sampleRate); // 偵錯日誌
+
                     const pcmBuffer = base64ToArrayBuffer(audioData); // 原始 PCM ArrayBuffer
                     const pcm16 = new Int16Array(pcmBuffer); // 原始 PCM 為 Int16Array
+                    console.log("PCM 數據轉換為 ArrayBuffer 和 Int16Array"); // 偵錯日誌
 
                     const wavBlob = pcmToWav(pcm16, sampleRate); // 轉換為 WAV Blob
+                    console.log("WAV Blob 已建立"); // 偵錯日誌
 
                     // 使用 FileReader 將 Blob 讀取為 ArrayBuffer，以便 AudioContext 解碼
                     const reader = new FileReader();
                     reader.onload = async () => {
                         if (!audioContext) {
                             audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            console.log("AudioContext 已初始化"); // 偵錯日誌
                         }
                         try {
-                            // 解碼 WAV ArrayBuffer 為 AudioBuffer
+                            console.log("嘗試解碼音訊數據..."); // 偵錯日誌
                             const decodedBuffer = await audioContext.decodeAudioData(reader.result);
                             currentAudioBuffer = decodedBuffer; // 儲存以便重複播放
+                            console.log("音訊已成功解碼，準備播放"); // 偵錯日誌
                             await playAudioBuffer(currentAudioBuffer); // 播放音訊
+                            console.log("音訊播放中！"); // 偵錯日誌
                             startTimer(); // 播放後立即啟動計時器
                         } catch (audioError) {
-                            console.error("音訊解碼錯誤:", audioError);
-                            feedbackMessage.textContent = '音訊解碼失敗。';
-                            feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl'; // 確保應用響應式類別
+                            console.error("音訊解碼或播放錯誤:", audioError);
+                            feedbackMessage.textContent = '音訊解碼或播放失敗。請點擊「再聽一次」或「下一個字母」試試看。';
+                            feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl';
                             endRound(); // 結束回合
                         }
                     };
@@ -496,14 +507,14 @@
 
                 } else {
                     feedbackMessage.textContent = '音訊載入失敗或格式不正確。請點擊「再聽一次」或「下一個字母」試試看。';
-                    feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl'; // 確保應用響應式類別
-                    console.error("音訊數據遺失或格式錯誤 (API 回應):", result);
+                    feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl';
+                    console.error("音訊數據遺失或格式錯誤 (API 回應結構異常):", result); // 偵錯日誌
                     endRound(); // 結束回合
                 }
             } catch (error) {
                 feedbackMessage.textContent = '載入音訊時發生錯誤。請再試一次。';
-                feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl'; // 確保應用響應式類別
-                console.error("獲取音訊錯誤:", error);
+                feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl';
+                console.error("獲取音訊的整個過程發生錯誤:", error); // 偵錯日誌
                 endRound(); // 結束回合
             } finally {
                 loadingIndicator.classList.add('hidden'); // 隱藏載入指示器
@@ -538,7 +549,7 @@
             } while (newCorrectLetter === currentCorrectLetter && spanishLetters.length > 1);
             currentCorrectLetter = newCorrectLetter;
 
-
+            console.log("開始新回合，目標字母:", currentCorrectLetter); // 偵錯日誌
             feedbackMessage.textContent = ''; // 清空回饋訊息
             nextRoundBtn.disabled = true; // 禁用「下一個字母」按鈕
             startGameBtn.disabled = true; // 禁用開始遊戲按鈕
@@ -600,6 +611,7 @@
                 chosenButton.classList.add('correct-choice'); // 標記為正確
                 score += (timeLeft > 0 ? timeLeft : 0); // 根據剩餘時間加分，至少0分
                 scoreDisplay.textContent = score; // 更新分數顯示
+                console.log("答案正確！分數:", score); // 偵錯日誌
             } else {
                 feedbackMessage.textContent = `答錯了。正確答案是: ${currentCorrectLetter} 🙁 點擊「下一個字母」繼續！`;
                 feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl'; // 確保應用響應式類別
@@ -610,6 +622,7 @@
                 if (correctButton) {
                     correctButton.classList.add('correct-choice');
                 }
+                console.log("答案錯誤。正確答案:", currentCorrectLetter); // 偵錯日誌
             }
             endRound(); // 結束回合
         }
@@ -618,6 +631,7 @@
 
         // 點擊「開始遊戲」按鈕時啟動遊戲
         startGameBtn.addEventListener('click', () => {
+            console.log("開始遊戲按鈕被點擊"); // 偵錯日誌
             startGameBtn.disabled = true; // 禁用開始按鈕
             score = 0; // 重置分數
             scoreDisplay.textContent = score;
@@ -626,6 +640,7 @@
 
         // 點擊「再聽一次」按鈕時重新播放音訊
         playAudioBtn.addEventListener('click', () => {
+            console.log("再聽一次按鈕被點擊"); // 偵錯日誌
             if (currentAudioBuffer) {
                 playAudioBuffer(currentAudioBuffer);
             } else if (currentCorrectLetter) {
@@ -635,10 +650,14 @@
         });
 
         // 點擊「下一個字母」按鈕時開始新一輪遊戲
-        nextRoundBtn.addEventListener('click', startNewRound);
+        nextRoundBtn.addEventListener('click', () => {
+            console.log("下一個字母按鈕被點擊，開始新回合"); // 偵錯日誌
+            startNewRound();
+        });
 
         // 當視窗載入完成時，顯示初始提示
         window.onload = () => {
+            console.log("頁面載入完成，初始化遊戲界面。"); // 偵錯日誌
             // 在 letterDisplay 元素中顯示初始提示，並使用新的 CSS 類來控制其大小
             const initialMessageSpan = document.createElement('span');
             initialMessageSpan.classList.add('initial-message');
