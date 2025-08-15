@@ -259,6 +259,13 @@
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
         }
+        /* 新增的引導訊息樣式 */
+        #initialPrompt {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            color: #555;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -279,6 +286,9 @@
 
         <!-- 回饋訊息 -->
         <p id="feedbackMessage"></p>
+        
+        <!-- 新增的初始提示訊息 -->
+        <p id="initialPrompt">若無聲音，請點擊「重播一次」或下方字母來開始！</p>
 
         <!-- 重播一次按鈕 -->
         <button id="replayButton" class="btn">
@@ -306,6 +316,7 @@
         const loadingSpinner = document.getElementById('loadingSpinner');
         const alphabetChoicesContainer = document.getElementById('alphabetChoicesContainer'); // 字母選擇區塊容器
         const feedbackMessage = document.getElementById('feedbackMessage'); // 回饋訊息元素
+        const initialPrompt = document.getElementById('initialPrompt'); // 初始提示訊息元素
 
         // 西班牙語字母表
         const spanishAlphabet = [
@@ -315,6 +326,7 @@
         let currentLetterIndex = 0; // 當前正在練習的字母在 spanishAlphabet 中的索引
         let speechSynth = window.speechSynthesis; // 語音合成API
         let spanishVoice = null; // 將儲存找到的西班牙語音色
+        let firstInteractionDone = false; // 追蹤是否有過使用者互動
 
         // 初始化語音合成器並選擇西班牙語音色
         function initializeSpeechSynth() {
@@ -334,7 +346,8 @@
                 
                 // 遊戲初始化
                 loadingSpinner.style.display = 'none'; // 隱藏加載指示器
-                selectNewLetterAndSpeak(); // 隨機選擇第一個字母並開始遊戲
+                initialPrompt.style.display = 'block'; // 顯示初始提示
+                selectNewLetterAndDisplay(); // 隨機選擇第一個字母並顯示，但不自動發音
             };
 
             // 如果onvoiceschanged沒有觸發 (例如，聲音已經加載)，則手動檢查
@@ -346,21 +359,15 @@
             }
         }
 
-        // 隨機選擇一個新字母並開始發音
-        function selectNewLetterAndSpeak() {
-            // 隨機選擇下一個字母的索引
+        // 隨機選擇一個新字母並顯示（不自動發音）
+        function selectNewLetterAndDisplay() {
             let newIndex;
             do {
                 newIndex = Math.floor(Math.random() * spanishAlphabet.length);
-            } while (newIndex === currentLetterIndex && spanishAlphabet.length > 1); // 確保不是同一個字母，除非只有一個字母
+            } while (newIndex === currentLetterIndex && spanishAlphabet.length > 1);
 
             currentLetterIndex = newIndex;
             updateLetterDisplay(); // 更新主顯示區的字母和選項
-            
-            // 在字母顯示動畫結束後播放發音
-            setTimeout(() => {
-                speakLetter();
-            }, 150);
         }
 
         // 更新字母顯示和按鈕狀態
@@ -379,6 +386,11 @@
                 letterDisplay.textContent = currentLetter;
                 letterDisplay.classList.add('active'); // 添加進場動畫類
                 createChoiceBlocks(); // 每次更新字母時，重新生成選擇塊
+                
+                // 啟用按鈕，等待使用者互動
+                replayButton.disabled = false;
+                nextButton.disabled = false;
+                disableChoiceBlocks(false);
             }, 100); // 100毫秒延遲
         }
 
@@ -394,6 +406,12 @@
                 speechSynth.cancel();
             }
             
+            // 如果是第一次互動，隱藏提示訊息
+            if (!firstInteractionDone) {
+                initialPrompt.style.display = 'none';
+                firstInteractionDone = true;
+            }
+
             // 禁用按鈕以防止發音中斷
             replayButton.disabled = true;
             nextButton.disabled = true;
@@ -445,13 +463,28 @@
             const choices = [correctLetter]; // 正確答案
 
             // 生成2個不同的隨機錯誤答案
-            while (choices.length < 3) {
-                const randomIndex = Math.floor(Math.random() * spanishAlphabet.length);
-                const randomLetter = spanishAlphabet[randomIndex];
-                if (!choices.includes(randomLetter)) {
+            // 確保選項至少有3個，且不重複
+            const availableLetters = [...spanishAlphabet];
+            const currentLetterIdx = availableLetters.indexOf(correctLetter);
+            if (currentLetterIdx > -1) {
+                availableLetters.splice(currentLetterIdx, 1); // 移除正確答案，避免重複選擇
+            }
+            
+            while (choices.length < 3 && availableLetters.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableLetters.length);
+                const randomLetter = availableLetters[randomIndex];
+                if (!choices.includes(randomLetter)) { // 再次確認不重複，即使從移除過的列表選
                     choices.push(randomLetter);
                 }
+                availableLetters.splice(randomIndex, 1); // 從可用字母中移除已選取的，防止重複
             }
+
+            // 如果字母表小於3個字母，則只顯示所有字母
+            if (spanishAlphabet.length < 3) {
+                 choices.length = 0; // 清空以便重新填充所有字母
+                 spanishAlphabet.forEach(letter => choices.push(letter));
+            }
+
 
             // 打亂選項順序
             choices.sort(() => Math.random() - 0.5);
@@ -471,16 +504,27 @@
         function handleChoiceClick(clickedBlock, clickedLetter) {
             const correctLetter = spanishAlphabet[currentLetterIndex];
 
+            // 如果是第一次互動，隱藏提示訊息
+            if (!firstInteractionDone) {
+                initialPrompt.style.display = 'none';
+                firstInteractionDone = true;
+            }
+
             if (clickedLetter === correctLetter) {
                 showFeedbackMessage("太棒了！正確！", "correct");
                 disableChoiceBlocks(true); // 禁用所有選項
                 // 答對後自動跳到下一個字母
                 setTimeout(() => {
-                    selectNewLetterAndSpeak();
+                    selectNewLetterAndDisplay(); // 顯示新字母
+                    // 答對後自動播放新字母的發音
+                    setTimeout(() => {
+                         speakLetter();
+                    }, 150);
                 }, 1000); // 顯示回饋1秒後跳轉
             } else {
                 showFeedbackMessage("錯了，請再試一次！", "incorrect");
                 clickedBlock.classList.add('incorrect-attempt'); // 添加錯誤提示動畫
+                clickedBlock.disabled = true; // 點錯的按鈕禁用
                 setTimeout(() => {
                     clickedBlock.classList.remove('incorrect-attempt'); // 移除動畫類以便下次使用
                 }, 300);
@@ -515,7 +559,16 @@
 
         // 事件監聽器
         replayButton.addEventListener('click', speakLetter);
-        nextButton.addEventListener('click', selectNewLetterAndSpeak); // 直接調用選擇新字母的函數
+        nextButton.addEventListener('click', () => {
+            if (speechSynth.speaking) {
+                speechSynth.cancel(); // 如果正在播放語音，先取消
+            }
+            selectNewLetterAndDisplay(); // 顯示新字母
+            // 點擊「下一個字母」後自動播放新字母的發音
+            setTimeout(() => {
+                 speakLetter();
+            }, 150);
+        });
 
         // 頁面加載完成時初始化
         document.addEventListener('DOMContentLoaded', initializeSpeechSynth);
