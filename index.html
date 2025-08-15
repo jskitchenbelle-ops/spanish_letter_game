@@ -347,7 +347,7 @@
                 // 遊戲初始化
                 loadingSpinner.style.display = 'none'; // 隱藏加載指示器
                 initialPrompt.style.display = 'block'; // 顯示初始提示
-                selectNewLetterAndDisplay(); // 隨機選擇第一個字母並顯示，但不自動發音
+                selectNewLetterAndDisplayContentOnly(); // 隨機選擇第一個字母並顯示，但不自動發音
             };
 
             // 如果onvoiceschanged沒有觸發 (例如，聲音已經加載)，則手動檢查
@@ -360,18 +360,18 @@
         }
 
         // 隨機選擇一個新字母並顯示（不自動發音）
-        function selectNewLetterAndDisplay() {
+        function selectNewLetterAndDisplayContentOnly() {
             let newIndex;
             do {
                 newIndex = Math.floor(Math.random() * spanishAlphabet.length);
             } while (newIndex === currentLetterIndex && spanishAlphabet.length > 1);
 
             currentLetterIndex = newIndex;
-            updateLetterDisplay(); // 更新主顯示區的字母和選項
+            updateLetterDisplayAndButtons(); // 更新主顯示區的字母和選項
         }
 
         // 更新字母顯示和按鈕狀態
-        function updateLetterDisplay() {
+        function updateLetterDisplayAndButtons() {
             letterDisplay.classList.remove('active', 'playing'); // 移除舊的動畫類
             hideFeedbackMessage(); // 隱藏回饋訊息
 
@@ -515,7 +515,7 @@
                 disableChoiceBlocks(true); // 禁用所有選項
                 // 答對後自動跳到下一個字母
                 setTimeout(() => {
-                    selectNewLetterAndDisplay(); // 顯示新字母
+                    selectNewLetterAndDisplayContentOnly(); // 顯示新字母
                     // 答對後自動播放新字母的發音
                     setTimeout(() => {
                          speakLetter();
@@ -563,7 +563,7 @@
             if (speechSynth.speaking) {
                 speechSynth.cancel(); // 如果正在播放語音，先取消
             }
-            selectNewLetterAndDisplay(); // 顯示新字母
+            selectNewLetterAndDisplayContentOnly(); // 顯示新字母
             // 點擊「下一個字母」後自動播放新字母的發音
             setTimeout(() => {
                  speakLetter();
