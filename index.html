@@ -1,534 +1,372 @@
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>西文字母配對遊戲</title>
-    <!-- 載入 Tailwind CSS 框架，用於快速構建響應式 UI -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 載入 Inter 字體，提供清晰現代的文字顯示 -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* 設置整個頁面樣式，居中顯示遊戲內容 */
+        /* Basic styling for the body */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #e0f2fe; /* 淺藍色背景，更活潑 */
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* 最小高度為視窗高度 */
+            min-height: 100vh;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); /* Gradient background for a lively feel */
             margin: 0;
             padding: 20px;
-            box-sizing: border-box; /* 盒模型設置 */
+            box-sizing: border-box;
+            color: #333;
         }
-        /* 遊戲容器樣式，包含背景、圓角、陰影和內邊距 */
-        .game-container {
-            background-color: #ffffff; /* 白色背景 */
-            border-radius: 2.5rem; /* 更大圓角，兒童友好 */
-            box-shadow: 0 20px 30px -8px rgba(0, 0, 0, 0.15), 0 8px 12px -8px rgba(0, 0, 0, 0.08); /* 更明顯的陰影 */
-            padding: 3.5rem; /* 更多內邊距 */
-            max-width: 600px; /* 增加最大寬度 */
-            width: 100%; /* 佔滿可用寬度 */
+
+        /* Main game container styling */
+        #game-container {
+            background-color: #ffffff;
+            border-radius: 25px; /* Rounded corners for kid-friendly design */
+            padding: 40px; /* Increased padding for more space */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             text-align: center;
+            max-width: 600px; /* Max width for better readability on large screens */
+            width: 100%; /* Fluid width for responsiveness */
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 2rem; /* 子元素之間的間距 */
-            border: 5px solid #60a5fa; /* 藍色邊框 */
+            gap: 25px; /* Increased gap for better vertical spacing between sections */
         }
-        /* 按鈕基礎樣式 */
-        .button {
-            padding: 1rem 2.5rem; /* 上下內邊距、左右內邊距 */
-            border-radius: 2rem; /* 大圓角，像糖果一樣 */
-            font-weight: 800; /* 字體更粗 */
-            font-size: 1.5rem; /* 字體更大 */
-            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease; /* 過渡動畫 */
-            cursor: pointer; /* 鼠標指針 */
+
+        /* Header for score and timer */
+        #header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 25px; /* Slightly increased margin */
+        }
+
+        /* Styling for the displayed letter */
+        #letter-display {
+            font-size: 8em; /* Super large for kids to easily see */
+            font-weight: bold;
+            color: #3498db; /* Bright blue color */
+            background-color: #ecf0f1;
+            border-radius: 20px;
+            padding: 45px 25px; /* Increased padding for internal space */
+            margin-bottom: 35px; /* Increased margin for more separation */
+            transition: background-color 0.3s ease; /* Smooth transition for feedback */
+        }
+
+        /* Container for option buttons */
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid for buttons */
+            gap: 20px; /* Increased gap between option buttons */
+            margin-bottom: 35px; /* Increased margin for separation */
+        }
+
+        /* Common styles for all buttons */
+        .option-button,
+        #start-button,
+        #play-sound-button,
+        #play-again-button {
+            font-size: 2.2em;
+            font-weight: bold;
+            padding: 20px 0;
             border: none;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15); /* 按鈕陰影 */
-            background-image: linear-gradient(to right, #60a5fa 0%, #3b82f6 100%); /* 漸層背景 */
-            color: #ffffff; /* 白色文字 */
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* 文字陰影 */
-            display: flex; /* 使用 flexbox 實現內容居中 */
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease; /* Smooth hover and active effects */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+
+        /* Styling for the choice buttons */
+        .option-button {
+            background-color: #2ecc71; /* Green color */
+            color: white;
+        }
+
+        /* Hover and active states for choice buttons */
+        .option-button:hover:not(:disabled) {
+            background-color: #27ae60;
+            transform: translateY(-3px); /* Slight lift effect */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .option-button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Disabled state for buttons */
+        .option-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Styling for the play sound button */
+        #play-sound-button {
+            background-color: #f39c12; /* Orange color */
+            color: white;
+            font-size: 1.8em;
+            width: 100%;
+            margin-top: 15px; /* Increased margin */
+        }
+
+        /* Hover and active states for play sound button */
+        #play-sound-button:hover:not(:disabled) {
+            background-color: #e67e22;
+            transform: translateY(-3px);
+        }
+        #play-sound-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        /* Styling for start and play again buttons */
+        #start-button, #play-again-button {
+            background-color: #9b59b6; /* Purple color */
+            color: white;
+            font-size: 2.5em;
+            padding: 25px 50px;
+            margin-top: 25px; /* Increased margin */
+        }
+        /* Hover and active states for start/play again buttons */
+        #start-button:hover:not(:disabled), #play-again-button:hover:not(:disabled) {
+            background-color: #8e44ad;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+        }
+        #start-button:active:not(:disabled), #play-again-button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Styling for feedback message (correct/incorrect) */
+        #feedback-message {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-top: 25px; /* Increased margin */
+            padding: 15px;
+            border-radius: 10px;
+            visibility: hidden; /* Hidden by default */
+            opacity: 0;
+            transition: opacity 0.3s ease, background-color 0.3s ease;
+            color: white;
+        }
+
+        /* Styling for correct feedback */
+        #feedback-message.correct {
+            background-color: #27ae60; /* Darker Green */
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Styling for incorrect feedback */
+        #feedback-message.incorrect {
+            background-color: #c0392b; /* Darker Red */
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Game Over Modal overlay */
+        #game-over-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+            backdrop-filter: blur(5px); /* Blur effect for the background */
+            display: flex;
             justify-content: center;
             align-items: center;
-        }
-        /* 按鈕懸停效果 */
-        .button:hover {
-            transform: translateY(-5px); /* 向上明顯移動 */
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25); /* 更大的懸停陰影 */
-        }
-        /* 按鈕按下效果 */
-        .button:active {
-            transform: translateY(-2px); /* 按下時輕微回彈 */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        /* 禁用按鈕樣式 */
-        .button:disabled {
-            background-image: linear-gradient(to right, #9ca3af 0%, #a0aec0 100%); /* 淺灰色漸層 */
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-            opacity: 0.7;
-        }
-        /* 字母選擇按鈕的特定樣式 */
-        .choice-button {
-            width: 120px; /* 固定寬度 */
-            height: 120px; /* 固定高度 */
-            font-size: 4rem; /* 字母更大 */
-            background-image: linear-gradient(to bottom right, #a78bfa 0%, #8b5cf6 100%); /* 紫色漸層 */
-            border: 3px solid #8b5cf6;
-            margin: 0.5rem; /* 間距 */
-        }
-        .choice-button:hover {
-            background-image: linear-gradient(to bottom right, #c4b5fd 0%, #a78bfa 100%);
-        }
-        .choice-button.correct-choice {
-            background-image: linear-gradient(to bottom right, #34d399 0%, #10b981 100%); /* 答對綠色 */
-            border-color: #059669;
-        }
-        .choice-button.incorrect-choice {
-            background-image: linear-gradient(to bottom right, #f87171 0%, #ef4444 100%); /* 答錯紅色 */
-            border-color: #dc2626;
+            z-index: 1000;
         }
 
-        /* 回饋訊息樣式 */
-        .feedback-message {
-            font-weight: 900;
-            margin-top: 1rem;
-            /* 讓文字自動換行 */
-            white-space: normal;
-            word-break: break-word;
-        }
-        /* 正確答案訊息顏色 */
-        .correct {
-            color: #10b981; /* 綠色 */
-        }
-        /* 錯誤答案訊息顏色 */
-        .incorrect {
-            color: #ef4444; /* 紅色 */
-        }
-        /* 載入指示器樣式 (旋轉動畫) */
-        .loading-spinner {
-            border: 4px solid #f3f3f3; /* 淺灰色 */
-            border-top: 4px solid #3b82f6; /* 藍色 */
-            border-radius: 50%; /* 圓形 */
-            width: 28px;
-            height: 28px;
-            animation: spin 1s linear infinite; /* 旋轉動畫 */
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 12px;
-        }
-        /* 旋轉動畫的關鍵幀 */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* 計時器進度條容器 */
-        .timer-bar-container {
-            width: 100%;
-            background-color: #a5d6f6; /* 淺藍色背景 */
-            border-radius: 0.75rem;
-            overflow: hidden; /* 確保進度條在內部 */
-            height: 25px; /* 進度條高度 */
-            margin-top: 1rem;
-            border: 2px solid #60a5fa;
-        }
-        /* 計時器進度條本身 */
-        .timer-bar {
-            height: 100%;
-            width: 100%; /* 初始寬度 */
-            background-color: #3b82f6; /* 藍色進度條 */
-            border-radius: 0.5rem;
-            transition: width linear; /* 平滑過渡 */
+        /* Content inside the game over modal */
+        #game-over-content {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            box-sizing: border-box;
+            animation: bounceIn 0.6s ease-out; /* Bounce animation when it appears */
         }
 
-        /* 初始提示文字的樣式 */
-        .initial-message {
-            font-weight: 800;
-            color: #4a5568; /* 深灰色 */
-            /* 使用 Tailwind 響應式字體大小 */
-            font-size: 2.25rem; /* 預設 text-4xl */
+        /* Styling for game over title */
+        #game-over-content h2 {
+            font-size: 3em;
+            color: #e74c3c; /* Red color for attention */
+            margin-bottom: 20px;
         }
-        /* Small screen specific adjustments for initial message */
-        @media (min-width: 640px) { /* Tailwind's sm breakpoint */
-            .initial-message {
-                font-size: 3rem; /* sm:text-5xl */
+
+        /* Styling for final score text */
+        #game-over-content p {
+            font-size: 1.8em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        /* Keyframe animation for bounce effect */
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            #letter-display {
+                font-size: 6em;
+                padding: 35px 20px;
+            }
+            .option-button {
+                font-size: 1.8em;
+                padding: 15px 0;
+            }
+            #play-sound-button {
+                font-size: 1.5em;
+            }
+            #header {
+                font-size: 1.2em;
+            }
+            #start-button, #play-again-button {
+                font-size: 2em;
+                padding: 20px 40px;
+            }
+            #game-over-content h2 {
+                font-size: 2.5em;
+            }
+            #game-over-content p {
+                font-size: 1.5em;
+            }
+            #game-container {
+                padding: 30px; /* Adjust padding for smaller screens */
+                gap: 20px;
+            }
+            #options-container {
+                gap: 15px; /* Adjust options gap */
             }
         }
 
-
-        /* 使 nextRoundBtn 在啟用時具有視覺差異 */
-        #nextRoundBtn:not(:disabled) {
-            background-image: linear-gradient(to right, #34d399 0%, #10b981 100%); /* 鮮綠色 */
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4); /* 綠色光暈 */
-            transform: translateY(0); /* 確保沒有預設變形 */
-            animation: pulse 1.5s infinite; /* 添加微妙的脈衝動畫 */
-        }
-
-        #nextRoundBtn:not(:disabled):hover {
-            background-image: linear-gradient(to right, #10b981 0%, #065f46 100%); /* 懸停時顏色更深 */
-            transform: translateY(-3px); /* 懸停時輕微上移 */
-            box-shadow: 0 15px 25px rgba(16, 185, 129, 0.5);
-        }
-
-        /* 下一個回合按鈕的脈衝動畫 */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+        @media (max-width: 480px) {
+            #letter-display {
+                font-size: 4.5em;
+                padding: 25px 10px;
+            }
+            .option-button {
+                font-size: 1.5em;
+                padding: 12px 0;
+            }
+            #game-container {
+                padding: 20px;
+            }
+            #header {
+                flex-direction: column;
+                gap: 10px;
+                font-size: 1em;
+            }
+            #game-over-content {
+                padding: 30px;
+            }
+            #game-over-content h2 {
+                font-size: 2em;
+            }
+            #game-over-content p {
+                font-size: 1.2em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800">西班牙語字母配對遊戲！</h1>
+    <div id="game-container">
+        <!-- Start button, visible before the game begins -->
+        <button id="start-button">開始遊戲</button>
 
-        <div class="flex justify-between items-center text-3xl font-bold text-gray-700">
-            <div>分數: <span id="score">0</span></div>
-            <div>時間: <span id="timer">10</span>s</div>
+        <!-- Game elements, hidden until the game starts -->
+        <div id="game-elements" style="display: none;">
+            <div id="header">
+                <div id="score">分數: 0</div>
+                <div id="timer">時間: 60s</div>
+            </div>
+
+            <!-- Area to display the current letter -->
+            <div id="letter-display">A</div>
+
+            <!-- Container for multiple-choice option buttons -->
+            <div id="options-container">
+                <!-- Option buttons will be dynamically inserted here by JavaScript -->
+            </div>
+
+            <!-- Button to replay the sound of the current letter -->
+            <button id="play-sound-button">🔊 再聽一次</button>
+
+            <!-- Message area for correct/incorrect feedback -->
+            <div id="feedback-message"></div>
         </div>
+    </div>
 
-        <div class="timer-bar-container">
-            <div id="timerBar" class="timer-bar" style="width: 100%;"></div>
-        </div>
-
-        <div id="loadingIndicator" class="hidden text-blue-600 text-xl font-semibold">
-            <div class="loading-spinner"></div> 正在準備聲音...
-        </div>
-
-        <div id="letterDisplay" class="letter-display text-8xl font-black text-indigo-700 mb-6 flex items-center justify-center h-32">
-            <!-- 字母將顯示在這裡 -->
-            <span class="initial-message">點擊「開始遊戲」按鈕</span>
-        </div>
-
-        <div id="choicesContainer" class="flex flex-wrap justify-center gap-4 mb-4">
-            <!-- 字母選擇按鈕將在此處動態生成 -->
-        </div>
-
-        <button id="playAudioBtn" class="button w-full" disabled>
-            🎵 再聽一次
-        </button>
-        <button id="nextRoundBtn" class="button w-full" disabled>
-            下一個字母！🚀
-        </button>
-        <button id="startGameBtn" class="button w-full">
-            開始遊戲！🎉
-        </button>
-
-        <div id="feedbackMessage" class="feedback-message text-xl sm:text-2xl lg:text-3xl">
-            <!-- 回饋訊息將顯示在這裡 -->
+    <!-- Game Over Modal, hidden until the game ends -->
+    <div id="game-over-modal">
+        <div id="game-over-content">
+            <h2>遊戲結束！</h2>
+            <p id="final-score">你的分數: 0</p>
+            <button id="play-again-button">再玩一次</button>
         </div>
     </div>
 
     <script>
-        // 遊戲中使用的西班牙語基本字母列表
-        // 選擇較為基礎且發音較為簡單的字母，避免雙字母組合和複雜規則
-        const spanishLetters = ['A', 'E', 'I', 'O', 'U', 'M', 'P', 'S', 'L', 'N', 'D', 'B', 'R', 'T'];
-        let currentCorrectLetter = ''; // 當前正確的字母
-        let score = 0; // 分數
-        let audioContext; // Web Audio API 上下文
-        let audioSource; // 音訊源節點
-        let currentAudioBuffer = null; // 儲存當前音訊緩衝區，用於重複播放
-        let timerInterval; // 計時器間隔 ID
-        const TIME_LIMIT = 10; // 每輪的時間限制（秒）
-        let timeLeft = TIME_LIMIT; // 剩餘時間
+        // Array containing all uppercase English alphabet letters
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        // Game variables
+        let score = 0; // Current score
+        let timeLeft = 60; // Time left in seconds for the game
+        let currentLetter = ''; // The letter currently being asked
+        let gameInterval; // Variable to hold the timer interval ID
 
-        // 獲取 DOM 元素
+        // Speech synthesis setup for playing letter sounds
+        let utterance = new SpeechSynthesisUtterance();
+        let synth = window.speechSynthesis;
+
+        // Event listener to ensure voices are loaded before trying to use them
+        // Try to find a specific Spanish voice, otherwise use any Spanish voice, or the first available voice
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = () => {
+                const voices = synth.getVoices();
+                utterance.voice = voices.find(voice => voice.lang === 'es-ES' && voice.name.includes('Google español')) ||
+                                  voices.find(voice => voice.lang === 'es-ES') ||
+                                  voices[0]; // Fallback to first available voice if Spanish not found
+                utterance.rate = 0.8; // Slightly slower pace for clearer pronunciation for kids
+                utterance.pitch = 1;  // Normal pitch
+            };
+        } else {
+            // Fallback for browsers that might not fire onvoiceschanged immediately
+            const voices = synth.getVoices();
+            utterance.voice = voices.find(voice => voice.lang === 'es-ES' && voice.name.includes('Google español')) ||
+                              voices.find(voice => voice.lang === 'es-ES') ||
+                              voices[0];
+            utterance.rate = 0.8;
+            utterance.pitch = 1;
+        }
+
+        // Get references to HTML elements
+        const startButton = document.getElementById('start-button');
+        const gameElements = document.getElementById('game-elements');
         const scoreDisplay = document.getElementById('score');
         const timerDisplay = document.getElementById('timer');
-        const timerBar = document.getElementById('timerBar');
-        const letterDisplay = document.getElementById('letterDisplay');
-        const choicesContainer = document.getElementById('choicesContainer');
-        const playAudioBtn = document.getElementById('playAudioBtn');
-        const nextRoundBtn = document.getElementById('nextRoundBtn');
-        const startGameBtn = document.getElementById('startGameBtn');
-        const feedbackMessage = document.getElementById('feedbackMessage');
-        const loadingIndicator = document.getElementById('loadingIndicator');
+        const letterDisplay = document.getElementById('letter-display');
+        const optionsContainer = document.getElementById('options-container');
+        const playSoundButton = document.getElementById('play-sound-button');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const gameOverModal = document.getElementById('game-over-modal');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const playAgainButton = document.getElementById('play-again-button');
 
-        /**
-         * 將 Base64 字串轉換為 ArrayBuffer。
-         * @param {string} base64 - Base64 編碼的字串。
-         * @returns {ArrayBuffer} 轉換後的 ArrayBuffer。
-         */
-        function base64ToArrayBuffer(base64) {
-            const binaryString = atob(base64);
-            const len = binaryString.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-            return bytes.buffer;
-        }
-
-        /**
-         * 將 PCM (原始音訊數據) 轉換為 WAV 格式的 Blob。
-         * @param {Int16Array} pcm16 - 16 位元 PCM 音訊數據。
-         * @param {number} sampleRate - 取樣率。
-         * @returns {Blob} WAV 格式的 Blob 對象。
-         */
-        function pcmToWav(pcm16, sampleRate) {
-            const numChannels = 1; // 單聲道
-            const bytesPerSample = 2; // 16 位元 PCM (2 位元組)
-
-            // WAV 頭部 (44 位元組)
-            const wavHeader = new ArrayBuffer(44);
-            const view = new DataView(wavHeader);
-
-            // RIFF 區塊描述符
-            writeString(view, 0, 'RIFF');
-            view.setUint32(4, 36 + pcm16.length * bytesPerSample, true); // ChunkSize
-            writeString(view, 8, 'WAVE');
-
-            // FMT 子區塊
-            writeString(view, 12, 'fmt ');
-            view.setUint32(16, 16, true); // Subchunk1Size (PCM 為 16)
-            view.setUint16(20, 1, true); // AudioFormat (PCM 為 1)
-            view.setUint16(22, numChannels, true); // NumChannels
-            view.setUint32(24, sampleRate, true); // SampleRate
-            view.setUint32(28, sampleRate * numChannels * bytesPerSample, true); // ByteRate
-            view.setUint16(32, numChannels * bytesPerSample, true); // BlockAlign
-            view.setUint16(34, 16, true); // BitsPerSample
-
-            // DATA 子區塊
-            writeString(view, 36, 'data');
-            view.setUint32(40, pcm16.length * bytesPerSample, true); // Subchunk2Size
-
-            // 將 WAV 頭部和 PCM 數據組合到一個新的 Uint8Array 中
-            const buffer = new Uint8Array(wavHeader.byteLength + pcm16.byteLength);
-            buffer.set(new Uint8Array(wavHeader), 0);
-            buffer.set(new Uint8Array(pcm16.buffer), wavHeader.byteLength);
-
-            return new Blob([buffer], { type: 'audio/wav' });
-        }
-
-        /**
-         * 輔助函數：在 DataView 中寫入字串。
-         * @param {DataView} view - DataView 對象。
-         * @param {number} offset - 寫入的起始偏移量。
-         * @param {string} s - 要寫入的字串。
-         */
-        function writeString(view, offset, s) {
-            for (let i = 0; i < s.length; i++) {
-                view.setUint8(offset + i, s.charCodeAt(i));
-            }
-        }
-
-        /**
-         * 從 AudioBuffer 播放音訊。
-         * @param {AudioBuffer} audioBuffer - 要播放的 AudioBuffer。
-         */
-        async function playAudioBuffer(audioBuffer) {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            // 如果有前一個音訊源，則停止並斷開連接
-            if (audioSource) {
-                audioSource.stop();
-                audioSource.disconnect();
-            }
-
-            audioSource = audioContext.createBufferSource();
-            audioSource.buffer = audioBuffer;
-            audioSource.connect(audioContext.destination);
-            audioSource.start(0); // 從頭開始播放
-        }
-
-        /**
-         * 啟動計時器。
-         */
-        function startTimer() {
-            clearInterval(timerInterval); // 先清除任何現有的計時器
-            timeLeft = TIME_LIMIT;
-            updateTimerDisplay(); // 立即更新顯示
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    handleTimeout(); // 時間到處理
-                }
-            }, 1000); // 每秒更新一次
-        }
-
-        /**
-         * 更新計時器顯示。
-         */
-        function updateTimerDisplay() {
-            timerDisplay.textContent = timeLeft;
-            timerBar.style.width = `${(timeLeft / TIME_LIMIT) * 100}%`;
-            if (timeLeft <= 3) {
-                timerBar.style.backgroundColor = '#ef4444'; // 最後3秒變紅
-            } else {
-                timerBar.style.backgroundColor = '#3b82f6'; // 正常藍色
-            }
-        }
-
-        /**
-         * 處理計時器時間到的情況。
-         */
-        function handleTimeout() {
-            feedbackMessage.textContent = `時間到！正確答案是: ${currentCorrectLetter} 🙁 點擊「下一個字母」繼續！`;
-            feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl'; // 確保應用響應式類別
-            
-            // 標記正確答案
-            const correctButton = document.querySelector(`.choice-button[data-letter="${currentCorrectLetter}"]`);
-            if (correctButton) {
-                correctButton.classList.add('correct-choice');
-            }
-            endRound(); // 結束回合
-        }
-
-        /**
-         * 結束當前回合，啟用「下一個字母」按鈕並禁用其他按鈕。
-         */
-        function endRound() {
-            clearInterval(timerInterval); // 停止計時器
-            playAudioBtn.disabled = true; // 禁用播放按鈕
-            nextRoundBtn.disabled = false; // 啟用「下一個字母」按鈕
-            startGameBtn.disabled = true; // 禁用開始遊戲按鈕
-
-            // 禁用所有選擇按鈕
-            const choiceButtons = choicesContainer.querySelectorAll('.choice-button');
-            choiceButtons.forEach(button => button.disabled = true);
-        }
-
-        /**
-         * 獲取並播放當前字母的音訊。
-         * @param {string} letter - 要發音的字母。
-         */
-        async function fetchAndPlayAudio(letter) {
-            console.log("嘗試獲取字母音訊:", letter); // 偵錯日誌
-            loadingIndicator.classList.remove('hidden'); // 顯示載入指示器
-            playAudioBtn.disabled = true; // 禁用播放按鈕
-            
-            // 禁用所有選擇按鈕直到音訊準備好
-            const choiceButtons = choicesContainer.querySelectorAll('.choice-button');
-            choiceButtons.forEach(button => button.disabled = true);
-
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: `Say cheerfully: ${letter}` }] });
-                const payload = {
-                    contents: chatHistory,
-                    generationConfig: {
-                        responseModalities: ["AUDIO"], // 要求音訊輸出
-                        speechConfig: {
-                            voiceConfig: {
-                                prebuiltVoiceConfig: { voiceName: "Iapetus" } // 選擇清晰的發音聲音
-                            }
-                        }
-                    },
-                    model: "gemini-2.5-flash-preview-tts" // 指定 TTS 模型
-                };
-
-                const apiKey = ""; // API 金鑰由 Canvas 環境自動提供
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-
-                let response;
-                let retryCount = 0;
-                const maxRetries = 3; // 最大重試次數
-                const initialDelay = 1000; // 初始延遲 (1 秒)
-
-                // 實作指數退避策略處理 API 呼叫的潛在節流
-                while (retryCount < maxRetries) {
-                    try {
-                        console.log(`嘗試獲取音訊 (重試 ${retryCount + 1}/${maxRetries})...`); // 偵錯日誌
-                        response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        console.log("Fetch API 回應狀態:", response.status, response.statusText); // 偵錯日誌
-                        if (response.ok) {
-                            break; // 成功，退出循環
-                        } else if (response.status === 429) { // 請求過多 (Rate Limit)
-                            const delay = initialDelay * Math.pow(2, retryCount);
-                            console.warn(`速率限制已觸發，將在 ${delay} 毫秒後重試...`);
-                            await new Promise(res => setTimeout(res, delay));
-                            retryCount++;
-                        } else {
-                            // 其他錯誤，拋出錯誤
-                            const errorText = await response.text();
-                            throw new Error(`API 錯誤: ${response.status} ${response.statusText} - ${errorText}`);
-                        }
-                    } catch (error) {
-                        console.error('Fetch 錯誤:', error);
-                        if (retryCount === maxRetries - 1) throw error; // 最後一次重試失敗則重新拋出錯誤
-                        const delay = initialDelay * Math.pow(2, retryCount);
-                        console.warn(`發生錯誤，將在 ${delay} 毫秒後重試...`);
-                        await new Promise(res => setTimeout(res, delay));
-                        retryCount++;
-                    }
-                }
-
-                const result = await response.json();
-                console.log("API 回應 JSON (完整):", result); // 偵錯日誌
-                const part = result?.candidates?.[0]?.content?.parts?.[0];
-                const audioData = part?.inlineData?.data;
-                const mimeType = part?.inlineData?.mimeType;
-
-                if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
-                    console.log("成功接收音訊數據，MIME 類型:", mimeType); // 偵錯日誌
-                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
-                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 16000; // 預設 16kHz
-                    console.log("取樣率:", sampleRate); // 偵錯日誌
-
-                    const pcmBuffer = base64ToArrayBuffer(audioData); // 原始 PCM ArrayBuffer
-                    const pcm16 = new Int16Array(pcmBuffer); // 原始 PCM 為 Int16Array
-                    console.log("PCM 數據轉換為 ArrayBuffer 和 Int16Array"); // 偵錯日誌
-
-                    const wavBlob = pcmToWav(pcm16, sampleRate); // 轉換為 WAV Blob
-                    console.log("WAV Blob 已建立"); // 偵錯日誌
-
-                    // 使用 FileReader 將 Blob 讀取為 ArrayBuffer，以便 AudioContext 解碼
-                    const reader = new FileReader();
-                    reader.onload = async () => {
-                        if (!audioContext) {
-                            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                            console.log("AudioContext 已初始化"); // 偵錯日誌
-                        }
-                        try {
-                            console.log("嘗試解碼音訊數據..."); // 偵錯日誌
-                            const decodedBuffer = await audioContext.decodeAudioData(reader.result);
-                            currentAudioBuffer = decodedBuffer; // 儲存以便重複播放
-                            console.log("音訊已成功解碼，準備播放"); // 偵錯日誌
-                            await playAudioBuffer(currentAudioBuffer); // 播放音訊
-                            console.log("音訊播放中！"); // 偵錯日誌
-                            startTimer(); // 播放後立即啟動計時器
-                        } catch (audioError) {
-                            console.error("音訊解碼或播放錯誤:", audioError);
-                            feedbackMessage.textContent = '音訊解碼或播放失敗。請點擊「再聽一次」或「下一個字母」試試看。';
-                            feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl';
-                            endRound(); // 結束回合
-                        }
-                    };
-                    reader.readAsArrayBuffer(wavBlob); // 將 WAV Blob 讀取為 ArrayBuffer
-
-                } else {
-                    feedbackMessage.textContent = '音訊載入失敗或格式不正確。請點擊「再聽一次」或「下一個字母」試試看。';
-                    feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl';
-                    console.error("音訊數據遺失或格式錯誤 (API 回應結構異常):", result); // 偵錯日誌
-                    endRound(); // 結束回合
-                }
-            } catch (error) {
-                feedbackMessage.textContent = '載入音訊時發生錯誤。請再試一次。';
-                feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl';
-                console.error("獲取音訊的整個過程發生錯誤:", error); // 偵錯日誌
-                endRound(); // 結束回合
-            } finally {
-                loadingIndicator.classList.add('hidden'); // 隱藏載入指示器
-                playAudioBtn.disabled = false; // 啟用播放按鈕
-                // 啟用選擇按鈕
-                choiceButtons.forEach(button => button.disabled = false);
-            }
-        }
-
-        /**
-         * 隨機打亂陣列。
-         * @param {Array} array - 要打亂的陣列。
-         * @returns {Array} 打亂後的陣列。
-         */
+        // Function to shuffle an array (Fisher-Yates algorithm)
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -537,141 +375,136 @@
             return array;
         }
 
-        /**
-         * 開始新一輪遊戲。
-         */
-        function startNewRound() {
-            // 隨機選擇一個新正確字母
-            // 確保新字母與前一個不同（如果可能）
-            let newCorrectLetter;
-            do {
-                newCorrectLetter = spanishLetters[Math.floor(Math.random() * spanishLetters.length)];
-            } while (newCorrectLetter === currentCorrectLetter && spanishLetters.length > 1);
-            currentCorrectLetter = newCorrectLetter;
+        // Function to play the sound of a given letter
+        function playSound(letter) {
+            utterance.text = letter; // Set the text to be spoken
+            synth.speak(utterance); // Speak the text
+        }
 
-            console.log("開始新回合，目標字母:", currentCorrectLetter); // 偵錯日誌
-            feedbackMessage.textContent = ''; // 清空回饋訊息
-            nextRoundBtn.disabled = true; // 禁用「下一個字母」按鈕
-            startGameBtn.disabled = true; // 禁用開始遊戲按鈕
-            playAudioBtn.disabled = false; // 啟用「再聽一次」按鈕
-            
-            currentAudioBuffer = null; // 清除上一個音訊緩衝區
-            clearInterval(timerInterval); // 確保清除計時器
-            timeLeft = TIME_LIMIT;
-            updateTimerDisplay(); // 更新計時器顯示
+        // Function to set up the next question
+        function nextQuestion() {
+            // Clear previous feedback message and reset letter display background
+            feedbackMessage.style.visibility = 'hidden';
+            feedbackMessage.classList.remove('correct', 'incorrect');
+            letterDisplay.style.backgroundColor = '#ecf0f1'; // Reset background color
 
-            // 移除 'initial-message' 樣式，確保顯示字母時使用預設的 'letter-display' 樣式
-            letterDisplay.classList.remove('initial-message');
-            letterDisplay.textContent = currentCorrectLetter; // 顯示正確字母
+            // Randomly select a new letter for the question
+            currentLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+            letterDisplay.textContent = currentLetter; // Display the letter
 
-            // 生成選擇選項
-            let choices = [currentCorrectLetter];
-            let incorrectChoices = [];
-            const numChoices = 3; // 總共顯示3個選項 (1個正確 + 2個錯誤)
+            // Automatically play the sound for the new letter
+            playSound(currentLetter);
 
-            // 從所有字母中隨機選擇錯誤選項，確保不與正確答案重複，且不與已選的錯誤選項重複
-            while (incorrectChoices.length < numChoices - 1) {
-                const randomLetter = spanishLetters[Math.floor(Math.random() * spanishLetters.length)];
-                if (randomLetter !== currentCorrectLetter && !incorrectChoices.includes(randomLetter)) {
-                    incorrectChoices.push(randomLetter);
-                }
+            // Generate options for the multiple-choice buttons
+            const options = new Set();
+            options.add(currentLetter); // Add the correct answer to the set
+
+            // Add 3 random incorrect answers, ensuring they are unique and not the current letter
+            while (options.size < 4) { // We want 4 options in total (1 correct, 3 incorrect)
+                const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+                options.add(randomLetter); // Add to set; set handles uniqueness
             }
-            choices = choices.concat(incorrectChoices);
-            shuffleArray(choices); // 打亂選項順序
 
-            // 清空舊的選擇按鈕並渲染新的
-            choicesContainer.innerHTML = '';
-            choices.forEach(letter => {
+            // Convert set to array and shuffle the options
+            const shuffledOptions = shuffleArray(Array.from(options));
+
+            // Clear any previously created option buttons
+            optionsContainer.innerHTML = '';
+
+            // Create and append buttons for each option
+            shuffledOptions.forEach(option => {
                 const button = document.createElement('button');
-                button.classList.add('button', 'choice-button');
-                button.textContent = letter;
-                button.setAttribute('data-letter', letter); // 儲存字母數據以便檢查
-                button.addEventListener('click', () => handleChoice(letter, button));
-                choicesContainer.appendChild(button);
+                button.classList.add('option-button');
+                button.textContent = option; // Display the letter on the button
+                // Attach click event listener to check the answer
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
             });
-            
-            fetchAndPlayAudio(currentCorrectLetter); // 獲取並播放新字母的音訊
         }
 
-        /**
-         * 處理小朋友選擇字母的動作。
-         * @param {string} chosenLetter - 小朋友選擇的字母。
-         * @param {HTMLButtonElement} chosenButton - 小朋友點擊的按鈕元素。
-         */
-        function handleChoice(chosenLetter, chosenButton) {
-            clearInterval(timerInterval); // 停止計時器
+        // Function to check if the selected answer is correct
+        function checkAnswer(selectedLetter) {
+            // Disable all option buttons temporarily to prevent multiple clicks
+            Array.from(optionsContainer.children).forEach(button => {
+                button.disabled = true;
+            });
 
-            // 禁用所有選擇按鈕，防止重複點擊
-            const choiceButtons = choicesContainer.querySelectorAll('.choice-button');
-            choiceButtons.forEach(button => button.disabled = true);
-
-            if (chosenLetter === currentCorrectLetter) {
-                feedbackMessage.textContent = '太棒了！你答對了！🎉 點擊「下一個字母」繼續！';
-                feedbackMessage.className = 'feedback-message correct text-xl sm:text-2xl lg:text-3xl'; // 確保應用響應式類別
-                chosenButton.classList.add('correct-choice'); // 標記為正確
-                score += (timeLeft > 0 ? timeLeft : 0); // 根據剩餘時間加分，至少0分
-                scoreDisplay.textContent = score; // 更新分數顯示
-                console.log("答案正確！分數:", score); // 偵錯日誌
+            if (selectedLetter === currentLetter) {
+                // If correct, increment score and provide positive feedback
+                score++;
+                scoreDisplay.textContent = `分數: ${score}`;
+                feedbackMessage.textContent = '答對了！';
+                feedbackMessage.classList.add('correct');
+                feedbackMessage.style.visibility = 'visible';
+                letterDisplay.style.backgroundColor = '#d4edda'; // Light green background
             } else {
-                feedbackMessage.textContent = `答錯了。正確答案是: ${currentCorrectLetter} 🙁 點擊「下一個字母」繼續！`;
-                feedbackMessage.className = 'feedback-message incorrect text-xl sm:text-2xl lg:text-3xl'; // 確保應用響應式類別
-                chosenButton.classList.add('incorrect-choice'); // 標記為錯誤
-                
-                // 標記正確答案
-                const correctButton = document.querySelector(`.choice-button[data-letter="${currentCorrectLetter}"]`);
-                if (correctButton) {
-                    correctButton.classList.add('correct-choice');
-                }
-                console.log("答案錯誤。正確答案:", currentCorrectLetter); // 偵錯日誌
+                // If incorrect, show the correct answer and provide negative feedback
+                feedbackMessage.textContent = `錯了，正確答案是 ${currentLetter}`;
+                feedbackMessage.classList.add('incorrect');
+                feedbackMessage.style.visibility = 'visible';
+                letterDisplay.style.backgroundColor = '#f8d7da'; // Light red background
             }
-            endRound(); // 結束回合
+
+            // After a short delay (1 second), enable buttons and move to the next question
+            setTimeout(() => {
+                Array.from(optionsContainer.children).forEach(button => {
+                    button.disabled = false; // Re-enable buttons
+                });
+                nextQuestion();
+            }, 1000); // 1 second delay for feedback
         }
 
-        // 事件監聽器
+        // Function to update the game timer
+        function updateTimer() {
+            timeLeft--; // Decrement time
+            timerDisplay.textContent = `時間: ${timeLeft}s`; // Update timer display
 
-        // 點擊「開始遊戲」按鈕時啟動遊戲
-        startGameBtn.addEventListener('click', () => {
-            console.log("開始遊戲按鈕被點擊"); // 偵錯日誌
-            startGameBtn.disabled = true; // 禁用開始按鈕
-            score = 0; // 重置分數
-            scoreDisplay.textContent = score;
-            startNewRound();
+            if (timeLeft <= 0) {
+                clearInterval(gameInterval); // Stop the timer
+                endGame(); // End the game if time runs out
+            }
+        }
+
+        // Function to end the game and show the final score
+        function endGame() {
+            gameElements.style.display = 'none'; // Hide game elements
+            gameOverModal.style.display = 'flex'; // Show game over modal
+            finalScoreDisplay.textContent = `你的分數: ${score}`; // Display final score
+        }
+
+        // Function to initialize or reset the game state
+        function initializeGame() {
+            score = 0; // Reset score
+            timeLeft = 60; // Reset timer
+            scoreDisplay.textContent = `分數: ${score}`;
+            timerDisplay.textContent = `時間: ${timeLeft}s`;
+            startButton.style.display = 'block'; // Show start button
+            gameElements.style.display = 'none'; // Hide game elements
+            gameOverModal.style.display = 'none'; // Hide game over modal
+            clearInterval(gameInterval); // Clear any existing timer interval
+        }
+
+        // Event Listeners for game control buttons
+        startButton.addEventListener('click', () => {
+            startButton.style.display = 'none'; // Hide start button
+            gameElements.style.display = 'flex'; // Show game elements
+            nextQuestion(); // Start the first question
+            gameInterval = setInterval(updateTimer, 1000); // Start the timer (updates every second)
         });
 
-        // 點擊「再聽一次」按鈕時重新播放音訊
-        playAudioBtn.addEventListener('click', () => {
-            console.log("再聽一次按鈕被點擊"); // 偵錯日誌
-            if (currentAudioBuffer) {
-                playAudioBuffer(currentAudioBuffer);
-            } else if (currentCorrectLetter) {
-                // 如果音訊緩衝區未準備好，則重新獲取並播放
-                fetchAndPlayAudio(currentCorrectLetter);
+        // Event listener for the "Play Sound" button
+        playSoundButton.addEventListener('click', () => {
+            if (currentLetter) { // Only play sound if a letter is currently displayed
+                playSound(currentLetter);
             }
         });
 
-        // 點擊「下一個字母」按鈕時開始新一輪遊戲
-        nextRoundBtn.addEventListener('click', () => {
-            console.log("下一個字母按鈕被點擊，開始新回合"); // 偵錯日誌
-            startNewRound();
-        });
+        // Event listener for the "Play Again" button in the game over modal
+        playAgainButton.addEventListener('click', initializeGame);
 
-        // 當視窗載入完成時，顯示初始提示
-        window.onload = () => {
-            console.log("頁面載入完成，初始化遊戲界面。"); // 偵錯日誌
-            // 在 letterDisplay 元素中顯示初始提示，並使用新的 CSS 類來控制其大小
-            const initialMessageSpan = document.createElement('span');
-            initialMessageSpan.classList.add('initial-message');
-            initialMessageSpan.textContent = '點擊「開始遊戲」按鈕';
-            letterDisplay.innerHTML = ''; // 清空原有內容
-            letterDisplay.appendChild(initialMessageSpan); // 加入新的 span 元素
+        // Initialize the game when the window loads
+        window.onload = initializeGame;
 
-            playAudioBtn.disabled = true;
-            nextRoundBtn.disabled = true;
-            startGameBtn.disabled = false; // 啟用開始遊戲按鈕
-            timerDisplay.textContent = TIME_LIMIT; // 重置時間顯示
-            timerBar.style.width = '100%'; // 重置進度條
-            timerBar.style.backgroundColor = '#3b82f6';
-        };
     </script>
 </body>
 </html>
